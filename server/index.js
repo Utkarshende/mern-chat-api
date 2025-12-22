@@ -10,7 +10,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Vite default port
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
@@ -18,20 +18,16 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
-  // Join Room
   socket.on("join_room", (room) => {
     socket.join(room);
-    console.log(`User ${socket.id} joined room: ${room}`);
   });
 
-  // Send Message
   socket.on("send_message", (data) => {
     socket.to(data.room).emit("receive_message", data);
   });
 
-  // Typing Status
+  // Typing logic
   socket.on("typing", (data) => {
-    // Broadcast to others in the room that this user is typing
     socket.to(data.room).emit("display_typing", data);
   });
 
@@ -47,4 +43,4 @@ io.on("connection", (socket) => {
 const PORT = 5000;
 server.listen(PORT, () => {
   console.log(`SERVER RUNNING ON PORT ${PORT}`);
-});
+}); 
