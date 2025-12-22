@@ -5,27 +5,30 @@ const { Server } = require("socket.io");
 
 const app = express();
 
-// 1. Update CORS to allow both local development and your live Vercel URL
+// REPLACE WITH YOUR ACTUAL VERCEL URL
+const VERCEL_URL = "https://mern-chat-api-azure.vercel.app/";
+
 app.use(cors({
-  origin: ["http://localhost:5173", "https://mern-chat-h7ux4s7w8-utkarshas-projects-b2961f40.vercel.app/"]
+  origin: ["http://localhost:5173", VERCEL_URL]
 }));
 
-// Add this below app.use(cors())
+// Health Check Route
 app.get("/", (req, res) => {
-  res.send("VibeChat Server is running smoothly!");
+  res.send("VibeChat Server is online!");
 });
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    // 2. Do the same for Socket.io CORS
-    origin: ["http://localhost:5173","https://mern-chat-api-azure.vercel.app/"],
+    origin: ["http://localhost:5173", VERCEL_URL],
     methods: ["GET", "POST"],
   },
 });
 
 io.on("connection", (socket) => {
+  console.log(`User Connected: ${socket.id}`);
+
   socket.on("join_room", (room) => {
     socket.join(room);
   });
@@ -51,9 +54,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// 3. IMPORTANT: Use process.env.PORT for Render deployment
 const PORT = process.env.PORT || 5000;
-
 server.listen(PORT, () => {
   console.log(`SERVER RUNNING ON PORT ${PORT}`);
 });
