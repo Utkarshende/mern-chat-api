@@ -1,18 +1,18 @@
 const express = require("express");
-const app = express();
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
 
+const app = express();
 app.use(cors());
 
-// 1. Create the HTTP server using Express
+// Create the HTTP server
 const server = http.createServer(app);
 
-// 2. Initialize Socket.io by passing the server instance
+// Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Vite's default port
+    origin: "http://localhost:5173", // Default Vite port
     methods: ["GET", "POST"],
   },
 });
@@ -20,13 +20,15 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
-  socket.on("join_room", (data) => {
-    socket.join(data);
-    console.log(`User with ID: ${socket.id} joined room: ${data}`);
+  // Event for joining a specific chat room
+  socket.on("join_room", (roomName) => {
+    socket.join(roomName);
+    console.log(`User ${socket.id} joined room: ${roomName}`);
   });
 
+  // Event for sending messages
   socket.on("send_message", (data) => {
-    // Broadcast message to everyone in the specific room
+    // data should contain { room, message, author }
     socket.to(data.room).emit("receive_message", data);
   });
 
@@ -35,7 +37,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// 3. IMPORTANT: Use server.listen, NOT app.listen
-server.listen(5000, () => {
-  console.log("SERVER RUNNING ON PORT 5000");
+const PORT = 5000;
+server.listen(PORT, () => {
+  console.log(`SERVER RUNNING ON PORT ${PORT}`);
 });
