@@ -10,6 +10,11 @@ app.use(cors({
   origin: ["http://localhost:5173", "https://mern-chat-h7ux4s7w8-utkarshas-projects-b2961f40.vercel.app/"]
 }));
 
+// Add this below app.use(cors())
+app.get("/", (req, res) => {
+  res.send("VibeChat Server is running smoothly!");
+});
+
 const server = http.createServer(app);
 
 const io = new Server(server, {
