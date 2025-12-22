@@ -20,7 +20,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     // 2. Do the same for Socket.io CORS
-    origin: ["http://localhost:5173", "https://mern-chat-h7ux4s7w8-utkarshas-projects-b2961f40.vercel.app/"],
+    origin: ["http://localhost:5173","https://mern-chat-api-azure.vercel.app/"],
     methods: ["GET", "POST"],
   },
 });

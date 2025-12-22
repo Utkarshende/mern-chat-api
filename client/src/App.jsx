@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { Send, LogIn, LogOut, Globe, ShieldCheck } from "lucide-react";
 
-const socket = io.connect("http://localhost:5000");
+const socket = io.connect("https://mern-chat-api-7bdr.onrender.com");
 
 function App() {
   const [user, setUser] = useState(null);
