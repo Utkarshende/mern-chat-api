@@ -4,13 +4,18 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 
 const app = express();
-app.use(cors());
+
+// 1. Update CORS to allow both local development and your live Vercel URL
+app.use(cors({
+  origin: ["http://localhost:5173", "https://mern-chat-h7ux4s7w8-utkarshas-projects-b2961f40.vercel.app/"]
+}));
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    // 2. Do the same for Socket.io CORS
+    origin: ["http://localhost:5173", "https://mern-chat-h7ux4s7w8-utkarshas-projects-b2961f40.vercel.app/"],
     methods: ["GET", "POST"],
   },
 });
@@ -24,9 +29,7 @@ io.on("connection", (socket) => {
     socket.to(data.room).emit("receive_message", data);
   });
 
-  // LOGGING TYPING EVENTS
   socket.on("typing", (data) => {
-    console.log(`User ${data.author} is typing in room ${data.room}`);
     socket.to(data.room).emit("display_typing", data);
   });
 
@@ -43,7 +46,9 @@ io.on("connection", (socket) => {
   });
 });
 
-const PORT = 5000;
+// 3. IMPORTANT: Use process.env.PORT for Render deployment
+const PORT = process.env.PORT || 5000;
+
 server.listen(PORT, () => {
   console.log(`SERVER RUNNING ON PORT ${PORT}`);
 });
