@@ -18,13 +18,19 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   socket.on("join_room", (room) => {
     socket.join(room);
+    console.log(`User ${socket.id} joined room: ${room}`);
+  });
+
+  // Listener for when a user manually leaves a room
+  socket.on("leave_room", (room) => {
+    socket.leave(room);
+    console.log(`User ${socket.id} left room: ${room}`);
   });
 
   socket.on("send_message", (data) => {
     socket.to(data.room).emit("receive_message", data);
   });
 
-  // Simple Typing Events
   socket.on("typing", (data) => {
     socket.to(data.room).emit("display_typing", data);
   });
