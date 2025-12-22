@@ -1,21 +1,23 @@
-
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { getFirestore } from "firebase/firestore"; // 1. Import Firestore
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAE8l9WWXVBZbGr4pzP_5hugjAEBLQa-Y8",
-  authDomain: "my-chat-app-e0692.firebaseapp.com",
-  projectId: "my-chat-app-e0692",
-  storageBucket: "my-chat-app-e0692.firebasestorage.app",
-  messagingSenderId: "924810199092",
-  appId: "1:924810199092:web:7a68cf1f07be75fcc28a61",
-  measurementId: "G-S91MSGQ3KJ"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-// 2. Export all needed services
+
 export const auth = getAuth(app);
-export const db = getFirestore(app); // This is the 'db' export your error is missing
+export const db = getFirestore(app); 
 export const provider = new GoogleAuthProvider();
+
+// Google Sign-In Function
 export const signInWithGoogle = () => signInWithPopup(auth, provider);

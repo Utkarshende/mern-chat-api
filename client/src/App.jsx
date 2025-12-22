@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import { auth, signInWithGoogle, db } from "./firebase"; // Importing 'db' here
+import { auth, signInWithGoogle, db } from "./firebase"; 
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { 
   collection, 
