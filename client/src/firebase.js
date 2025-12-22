@@ -1,6 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getFirestore } from "firebase/firestore"; // 1. Import Firestore
 
 const firebaseConfig = {
   apiKey: "AIzaSyAE8l9WWXVBZbGr4pzP_5hugjAEBLQa-Y8",
@@ -13,6 +14,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+// 2. Export all needed services
 export const auth = getAuth(app);
+export const db = getFirestore(app); // This is the 'db' export your error is missing
 export const provider = new GoogleAuthProvider();
 export const signInWithGoogle = () => signInWithPopup(auth, provider);

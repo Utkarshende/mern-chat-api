@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import { auth, signInWithGoogle, db } from "./firebase";
+import { auth, signInWithGoogle, db } from "./firebase"; // Importing 'db' here
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { 
   collection, 
@@ -25,7 +25,7 @@ function App() {
   
   const scrollRef = useRef(null);
   const typingTimeoutRef = useRef(null);
-  const messagesRef = collection(db, "messages"); // Firestore reference
+  const messagesRef = collection(db, "messages");
 
   // 1. Auth Listener
   useEffect(() => {
@@ -35,11 +35,10 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // 2. Real-time Message Listener (Firestore)
+  // 2. Real-time Message History (Firestore)
   useEffect(() => {
     if (!showChat || !room) return;
 
-    // Query messages for this specific room, ordered by time
     const q = query(
       messagesRef,
       where("room", "==", room),
@@ -57,7 +56,7 @@ function App() {
     return () => unsubscribe();
   }, [showChat, room]);
 
-  // 3. Socket Listeners (For Typing only)
+  // 3. Socket Listener (For live Typing status only)
   useEffect(() => {
     socket.on("display_typing", (data) => setTypingUser(data.author));
     socket.on("hide_typing", () => setTypingUser(""));
@@ -100,7 +99,6 @@ function App() {
 
   const sendMessage = async () => {
     if (currentMessage !== "") {
-      // SAVE TO FIRESTORE
       await addDoc(messagesRef, {
         room,
         author: user.displayName,
@@ -109,7 +107,6 @@ function App() {
         createdAt: serverTimestamp(),
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       });
-
       setCurrentMessage("");
       socket.emit("stop_typing", { room });
     }
@@ -124,7 +121,6 @@ function App() {
               <Globe className="text-white" size={28} />
             </div>
             <h2 className="text-2xl font-bold">VibeChat</h2>
-            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">History Enabled</p>
           </div>
 
           {!user ? (
@@ -135,13 +131,13 @@ function App() {
           ) : (
             <div className="space-y-4">
               <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                <img src={user.photoURL} className="w-10 h-10 rounded-full shadow-sm" alt="profile" />
+                <img src={user.photoURL} className="w-10 h-10 rounded-full" alt="profile" />
                 <div>
                   <p className="text-sm font-bold leading-none">{user.displayName}</p>
-                  <p className="text-[10px] text-emerald-500 mt-1 uppercase tracking-widest font-black">Online</p>
+                  <p className="text-[10px] text-emerald-500 mt-1 font-black uppercase">Online</p>
                 </div>
               </div>
-              <input className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 transition-all" placeholder="Room ID" onChange={(e) => setRoom(e.target.value)} />
+              <input className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter Room ID" onChange={(e) => setRoom(e.target.value)} />
               <button onClick={joinRoom} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition-all active:scale-95">
                 Join Chat
               </button>
@@ -160,12 +156,6 @@ function App() {
           </div>
 
           <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-slate-50">
-            <div className="flex justify-center mb-4">
-              <span className="bg-slate-200 text-slate-500 text-[9px] font-bold px-3 py-1 rounded-full flex items-center gap-1">
-                <ShieldCheck size={10} /> END-TO-END ENCRYPTED HISTORY
-              </span>
-            </div>
-            
             {messageList.map((msg, index) => (
               <div key={index} className={`flex flex-col ${user.displayName === msg.author ? "items-end" : "items-start"}`}>
                 <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm shadow-sm ${
@@ -194,7 +184,7 @@ function App() {
 
           <div className="p-4 bg-white border-t flex gap-2">
             <input className="flex-1 bg-slate-100 p-3 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-indigo-400" type="text" value={currentMessage} placeholder="Message..." onChange={(e) => { setCurrentMessage(e.target.value); handleTyping(); }} onKeyPress={(e) => e.key === "Enter" && sendMessage()} />
-            <button onClick={sendMessage} className="bg-indigo-600 text-white p-3 rounded-2xl hover:bg-indigo-700 active:scale-90 transition-all"><Send size={18} /></button>
+            <button onClick={sendMessage} className="bg-indigo-600 text-white p-3 rounded-2xl hover:bg-indigo-700 active:scale-90"><Send size={18} /></button>
           </div>
         </div>
       )}
