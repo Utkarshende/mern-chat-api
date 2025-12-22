@@ -6,13 +6,11 @@ const { Server } = require("socket.io");
 const app = express();
 app.use(cors());
 
-// Create the HTTP server
 const server = http.createServer(app);
 
-// Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // Default Vite port
+    origin: "http://localhost:5173", // Vite default port
     methods: ["GET", "POST"],
   },
 });
@@ -20,16 +18,25 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
-  // Event for joining a specific chat room
-  socket.on("join_room", (roomName) => {
-    socket.join(roomName);
-    console.log(`User ${socket.id} joined room: ${roomName}`);
+  // Join Room
+  socket.on("join_room", (room) => {
+    socket.join(room);
+    console.log(`User ${socket.id} joined room: ${room}`);
   });
 
-  // Event for sending messages
+  // Send Message
   socket.on("send_message", (data) => {
-    // data should contain { room, message, author }
     socket.to(data.room).emit("receive_message", data);
+  });
+
+  // Typing Status
+  socket.on("typing", (data) => {
+    // Broadcast to others in the room that this user is typing
+    socket.to(data.room).emit("display_typing", data);
+  });
+
+  socket.on("stop_typing", (data) => {
+    socket.to(data.room).emit("hide_typing");
   });
 
   socket.on("disconnect", () => {
