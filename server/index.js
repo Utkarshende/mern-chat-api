@@ -16,24 +16,26 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  // Join Room
   socket.on("join_room", (room) => {
     socket.join(room);
   });
 
-  // Sending Messages
   socket.on("send_message", (data) => {
     socket.to(data.room).emit("receive_message", data);
   });
 
-  // WHATSAPP FEATURE: Logic for "User is typing..."
+  // LOGGING TYPING EVENTS
   socket.on("typing", (data) => {
-    // Broadcast to everyone in the room EXCEPT the sender
+    console.log(`User ${data.author} is typing in room ${data.room}`);
     socket.to(data.room).emit("display_typing", data);
   });
 
   socket.on("stop_typing", (data) => {
     socket.to(data.room).emit("hide_typing");
+  });
+
+  socket.on("leave_room", (room) => {
+    socket.leave(room);
   });
 
   socket.on("disconnect", () => {
