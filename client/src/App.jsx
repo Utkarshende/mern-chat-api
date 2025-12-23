@@ -5,7 +5,6 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { Send, LogOut, MessageCircle, Globe } from "lucide-react";
 
-// Pointing to your live Render backend
 const socket = io.connect("https://mern-chat-api-7bdr.onrender.com");
 
 function App() {

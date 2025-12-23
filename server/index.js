@@ -5,13 +5,11 @@ const { Server } = require("socket.io");
 
 const app = express();
 
-// List of trusted URLs
 const allowedOrigins = [
-  "https://mern-chat-api-azure.vercel.app", // Your Production Site
-  "http://localhost:5173"                    // Your Local Development
+  "https://mern-chat-api-azure.vercel.app", //  Production Site
+  "http://localhost:5173"                    //  Local Development
 ];
 
-// Standard Express CORS
 app.use(cors({
   origin: allowedOrigins,
   methods: ["GET", "POST"],
@@ -20,7 +18,6 @@ app.use(cors({
 
 const server = http.createServer(app);
 
-// Socket.io CORS
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
