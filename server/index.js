@@ -5,33 +5,56 @@ const { Server } = require("socket.io");
 
 const app = express();
 
-// EXACT URL from your error message (no trailing slash)
-const VERCEL_URL = "https://mern-chat-api-azure.vercel.app";
+// List of trusted URLs
+const allowedOrigins = [
+  "https://mern-chat-api-azure.vercel.app", // Your Production Site
+  "http://localhost:5173"                    // Your Local Development
+];
 
+// Standard Express CORS
 app.use(cors({
-  origin: VERCEL_URL,
+  origin: allowedOrigins,
   methods: ["GET", "POST"],
   credentials: true
 }));
 
 const server = http.createServer(app);
 
+// Socket.io CORS
 const io = new Server(server, {
   cors: {
-    origin: VERCEL_URL,
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
-    allowedHeaders: ["my-custom-header"],
     credentials: true
   },
 });
 
 io.on("connection", (socket) => {
-  socket.on("join_room", (room) => socket.join(room));
-  socket.on("send_message", (data) => socket.to(data.room).emit("receive_message", data));
-  socket.on("typing", (data) => socket.to(data.room).emit("display_typing", data));
-  socket.on("stop_typing", (data) => socket.to(data.room).emit("hide_typing"));
-  socket.on("disconnect", () => console.log("User Disconnected", socket.id));
+  console.log(`User Connected: ${socket.id}`);
+
+  socket.on("join_room", (room) => {
+    socket.join(room);
+    console.log(`User ${socket.id} joined room: ${room}`);
+  });
+
+  socket.on("send_message", (data) => {
+    socket.to(data.room).emit("receive_message", data);
+  });
+
+  socket.on("typing", (data) => {
+    socket.to(data.room).emit("display_typing", data);
+  });
+
+  socket.on("stop_typing", (data) => {
+    socket.to(data.room).emit("hide_typing");
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User Disconnected", socket.id);
+  });
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`SERVER RUNNING ON PORT ${PORT}`));
+server.listen(PORT, () => {
+  console.log(`🚀 CHAT SERVER RUNNING ON PORT ${PORT}`);
+});
